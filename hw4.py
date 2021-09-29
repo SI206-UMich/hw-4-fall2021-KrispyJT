@@ -10,7 +10,7 @@ class Customer:
         self.wallet = wallet
 
     # Reload some deposit into the customer's wallet.
-    def reload_money(self,deposit):
+    def reload_money(self, deposit):
         self.wallet += deposit
 
     # The customer orders the food and there could be different cases   
@@ -28,7 +28,11 @@ class Customer:
     # Submit_order takes a cashier, a stall and an amount as parameters, 
     # it deducts the amount from the customer’s wallet and calls the receive_payment method on the cashier object
     def submit_order(self, cashier, stall, amount): 
-        pass
+        amount = cashier.place_order(stall)
+        self.wallet = amount
+        
+
+        
 
     # The __str__ method prints the customer's information.    
     def __str__(self):
@@ -71,8 +75,40 @@ class Cashier:
 
 ## Complete the Stall class here following the instructions in HW_4_instructions_rubric
 class Stall:
+
+    def __init__(self, name, inventory, cost_per_food = 7, earnings = 0):
+        self.name = name
+        self.inventory = inventory
+        self.cost_per_food = cost_per_food
+        self.earnings = earnings
+
+        self.inventory = {}
+
     
-    pass
+    def process_order(self, quantity):
+        if self.name in self.inventory:
+            self.inventory -= quantity
+            return 
+
+
+    def has_item(self):
+        pass
+
+    def stock_up(self):
+        pass
+
+    def compute_cost(self):
+        pass
+
+    def __str__(self):
+        pass
+
+
+
+
+
+
+   
 
 
 class TestAllMethods(unittest.TestCase):
