@@ -76,37 +76,40 @@ class Cashier:
 ## Complete the Stall class here following the instructions in HW_4_instructions_rubric
 class Stall:
 
-    def __init__(self, name, inventory, cost_per_food = 7, earnings = 0):
+    def __init__(self, name, inventory, cost = 7, earnings = 0):
         self.name = name
         self.inventory = inventory
-        self.cost_per_food = cost_per_food
+        self.cost = cost
         self.earnings = earnings
-        self.inventory = {}
 
-    
-    def process_order(self, food, quantity):
-        if name_of_food in self.inventory:
-
-        if self.name in self.inventory:
-            self.inventory -= quantity
-            return 
-
-
-    def has_item(self, food, quantity):
-        if food in self.inventory and self.inventory[food] >= quantity:
+    def has_item(self, name, quantity):
+        if name in self.inventory and self.inventory[name] >= quantity:
             return True
         else:
             return False
+    
+    def process_order(self, name, quantity):
+        if self.has_item in self.inventory:
+            self.inventory -= self.inventory[quantity]
 
 
-    def stock_up(self):
-        pass
+    # def has_item(self, name, quantity):
+    #     if name in self.inventory and self.inventory[name] >= quantity:
+    #         return True
+    #     else:
+    #         return False
 
-    def compute_cost(self):
-        pass
+
+    def stock_up(self, food, quantity):
+        self.inventory[food] = self.inventory.get(food, 0) + quantity
+
+    def compute_cost(self, quantity):
+        return self.cost * quantity
+       
+        
 
     def __str__(self):
-        pass
+        return "Hello, we are " + self.name + ". This is the current menu " + self.inventory.key() + ". We charge " + self.cost + " per item. We have " + self.earnings + " in total."
 
 
 
@@ -240,20 +243,34 @@ def main():
     #Try all cases in the validate_order function
     #Below you need to have *each customer instance* try the four cases
     #case 1: the cashier does not have the stall 
-    customer_1.validate_order(cashier_1, stall_2, "lasagna", 1)
-    customer_2.validate_order(cashier_1, stall_2, "stirfry", 1)
-    
+    customer_1.validate_order(cashier_1, stall_2, "lasagna", 1) # will return "sorry we dont have that vendor stall"
+    customer_2.validate_order(cashier_1, stall_2, "stirfry", 1) # will return "sorry we dont have that vendor stall"
+    customer_3.validate_order(cashier_1, stall_2, "grilled cheese", 1) # will return "sorry we dont have that vendor stall"
 
-
+    customer_1.validate_order(cashier_2, stall_1, "lobster", 1) # will return "sorry we dont have that vendor stall"
+    customer_2.validate_order(cashier_2, stall_1, "stirfry", 1) # will return "sorry we dont have that vendor stall"
+    customer_3.validate_order(cashier_2, stall_1, "lasagna", 1) # will return "sorry we dont have that vendor stall"
     
     #case 2: the casher has the stall, but not enough ordered food or the ordered food item
-    
+    customer_1.validate_order(cashier_1, stall_1, "grilled cheese", 10) # will return "our stall has run out __ please try a different stall"
+    customer_2.validate_order(cashier_1, stall_1, "soup and salad", 15) # will return "our stall has run out __ please try a different stall"
+    customer_3.validate_order(cashier_2, stall_2, "stirfry", 8) # will return "our stall has run out __ please try a different stall"
+
     #case 3: the customer does not have enough money to pay for the order: 
+    customer_1.validate_order(cashier_1, stall_1, "lobster", 2) #
+    customer_2.validate_order(cashier_2, stall_2, "boneless wings", 80)
+    customer_3.validate_order(cashier_1, stall_1, "lobster", 100)
+
     
     #case 4: the customer successfully places an order
+    customer_1.validate_order(cashier_1, stall_1, "grilled cheese", 1)
+    customer_2.validate_order(cashier_2, stall_2, "stirfry", 1)
+    customer_3.validate_order(cashier_1, stall_1, "soup and salad", 1)
+
+
 
     pass
-
+""
 if __name__ == "__main__":
 	main()
 	print("\n")
