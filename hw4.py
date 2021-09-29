@@ -28,8 +28,8 @@ class Customer:
     # Submit_order takes a cashier, a stall and an amount as parameters, 
     # it deducts the amount from the customer’s wallet and calls the receive_payment method on the cashier object
     def submit_order(self, cashier, stall, amount): 
-        amount = cashier.place_order(stall)
-        self.wallet = amount
+        self.wallet = self.wallet - amount
+        Cashier.receive_payment(cashier, stall, amount)
         
 
         
@@ -81,18 +81,23 @@ class Stall:
         self.inventory = inventory
         self.cost_per_food = cost_per_food
         self.earnings = earnings
-
         self.inventory = {}
 
     
-    def process_order(self, quantity):
+    def process_order(self, food, quantity):
+        if name_of_food in self.inventory:
+
         if self.name in self.inventory:
             self.inventory -= quantity
             return 
 
 
-    def has_item(self):
-        pass
+    def has_item(self, food, quantity):
+        if food in self.inventory and self.inventory[food] >= quantity:
+            return True
+        else:
+            return False
+
 
     def stock_up(self):
         pass
@@ -214,11 +219,32 @@ class TestAllMethods(unittest.TestCase):
     
 ### Write main function
 def main():
-    #Create different objects 
+    # two dictionaries with 3 food types and cost per item (INVENTORY)
+    inventory_1 = {"grilled cheese" : 5, "soup and salad" : 6, "lobster" : 13}
+    inventory_2 = {"lasagna" : 9, "boneless wings" : 8, "stirfry" : 7}
+
+    #Create different objects (at least 3 customers with unique name and amount of money in wallet) (CUSTOMERS)
+    customer_1 = Customer("Jax", 200)
+    customer_2= Customer("Squidward", 75)
+    customer_3 = Customer("Jasper", 15)
+
+    # Create two stall objects with unique name, inventory, and cost (STALLS)
+    stall_1 = Stall("Food R Us", inventory_1, 3)
+    stall_2 = Stall("Food Time", inventory_2, 4)
+
+    # Create two cashiers with unique name and directory (CASHIERS)
+    cashier_1 = Cashier("Kelly", [stall_1])
+    cashier_2 = Cashier("Ketashia", [stall_2])
+
 
     #Try all cases in the validate_order function
     #Below you need to have *each customer instance* try the four cases
     #case 1: the cashier does not have the stall 
+    customer_1.validate_order(cashier_1, stall_2, "lasagna", 1)
+    customer_2.validate_order(cashier_1, stall_2, "stirfry", 1)
+    
+
+
     
     #case 2: the casher has the stall, but not enough ordered food or the ordered food item
     
