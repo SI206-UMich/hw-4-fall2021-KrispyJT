@@ -80,16 +80,16 @@ class Stall:
         self.cost = cost
         self.earnings = earnings
 
-    
     def has_item(self, name, quantity):
-        if name in self.inventory and self.inventory[name] >= quantity:
+        if name in self.inventory and self.inventory[name] >= quantity: #checks if name in the self inventory AND if the key is greater than or equal to the quantity 
             return True
         else:
             return False
     
     def process_order(self, name, quantity):
-        if self.has_item in self.inventory:
+        if self.has_item(name, quantity):
             self.inventory[name] -= quantity
+            print("Your order has been processed!") #maybe should be return?
 
         self.earnings += self.cost * quantity
 
@@ -103,7 +103,7 @@ class Stall:
         return quantity * self.cost
 
     def __str__(self):
-        return "Hello, we are " + self.name + ". This is the current menu " + self.inventory.keys() + ". We charge $" + str(self.cost) + " per item. We have $" + str(self.earnings) + " in total."
+        return "Hello, we are " + self.name + ". This is the current menu " + ", ".join(self.inventory.keys()) + ". We charge $" + str(self.cost) + " per item. We have $" + str(self.earnings) + " in total."
 
 
 class TestAllMethods(unittest.TestCase):
@@ -163,7 +163,6 @@ class TestAllMethods(unittest.TestCase):
         self.assertEqual(self.f2.wallet, previous_customer_wallet - 30)
         self.assertEqual(self.s2.earnings, previous_earnings_stall + 30)
 
-
 	# Check to see that the server can serve from the different stalls
     def test_adding_and_serving_stall(self):
         c3 = Cashier("North", directory = [self.s1, self.s2])
@@ -172,7 +171,6 @@ class TestAllMethods(unittest.TestCase):
         c3.add_stall(self.s3)
         self.assertTrue(c3.has_stall(self.s3))
         self.assertEqual(len(c3.directory), 3)
-
 
 	# Test that computed cost works properly.
     def test_compute_cost(self):
@@ -216,14 +214,14 @@ class TestAllMethods(unittest.TestCase):
     
 ### Write main function
 def main():
-    # two dictionaries with 3 food types and cost per item (INVENTORY) that are DIRECTORIES
-    inventory_1 = {"grilled cheese": 5, "soup and salad": 10, "lobster": 15, "nuggets": 4}
-    inventory_2 = {"lasagna": 50, "boneless wings": 7, "stirfry": 9, "pizza": 30}
+    # Made 2 dictionaties with at least 3 food types and cost per item (INVENTORY)
+    inventory_1 = {"grilled cheese": 5, "soup and salad": 10, "lobster": 15, "nuggets": 4, "steak" : 80, "crab legs" : 45}
+    inventory_2 = {"lasagna": 50, "boneless wings": 7, "stirfry": 9, "pizza": 30, "quesadilla" : 25, "brownie" : 8}
 
-    #Create different objects (at least 3 customers with unique name with amount of money in wallet) (CUSTOMERS)
-    customer_1 = Customer("Jax", 75)
-    customer_2= Customer("Squidward", 100)
-    customer_3 = Customer("Jasper", 200)
+    # Made 3 different objects (customers with unique name, amount of money in wallet) (CUSTOMERS)
+    customer_1 = Customer("Jax", wallet=75)
+    customer_2= Customer("Squidward", wallet=100)
+    customer_3 = Customer("Jasper", wallet=50)
 
     # Create two stall objects with unique name, inventory, and cost (STALLS)
     stall_1 = Stall("Food R Us", inventory_1, 10)
@@ -233,33 +231,31 @@ def main():
     cashier_1 = Cashier("Kelly", [stall_1])
     cashier_2 = Cashier("Ketashia", [stall_2])
 
-
     #Try all cases in the validate_order function
     #Below you need to have *each customer instance* try the four cases
-
     # CASE 1: the cashier does not have the stall 
     customer_1.validate_order(cashier_1, stall_2, "lasagna", 1) # will return "sorry we dont have that vendor stall"
     customer_2.validate_order(cashier_1, stall_2, "stirfry", 1) # will return "sorry we dont have that vendor stall"
     customer_3.validate_order(cashier_1, stall_2, "grilled cheese", 1) # will return "sorry we dont have that vendor stall"
-    print("CASE 1 ^")
+    print('CASE 1 ^ \n')
     # CASE 2: the casher has the stall, but not enough ordered food or the ordered food item
     customer_1.validate_order(cashier_1, stall_1, "grilled cheese", 11) # will return "our stall has run out __ please try a different stall"
     customer_2.validate_order(cashier_1, stall_1, "nuggets", 13) # will return "our stall has run out __ please try a different stall"
     customer_3.validate_order(cashier_2, stall_2, "stirfry", 20) # will return "our stall has run out __ please try a different stall"
-    print("CASE 2 ^")
+    print("CASE 2 ^\n")
     # CASE 3: the customer does not have enough money to pay for the order: 
-    customer_1.validate_order(cashier_1, stall_1, "lobster", 9) # should return " Dont have enough money for that please reload more!"
-    customer_2.validate_order(cashier_2, stall_2, "lasagna", 8) # should return " Dont have enough money for that please reload more!"
-    customer_3.validate_order(cashier_1, stall_1, "lasagna", 3) # should return " Dont have enough money for that please reload more!"
-    print("CASE 3^")
-    # CASE 4: the customer successfully places an order
-    customer_1.validate_order(cashier_1, stall_1, "grilled cheese", 1)
-    customer_2.validate_order(cashier_2, stall_2, "pizza", 2)
-    customer_3.validate_order(cashier_1, stall_2, "stirfry", 1)
-    print("CASE 4 ^")
+    customer_1.validate_order(cashier_1, stall_1, "steak", 12) # should return " Dont have enough money for that please reload more!"
+    customer_2.validate_order(cashier_2, stall_2, "quesadilla", 8) # should return " Dont have enough money for that please reload more!"
+    customer_3.validate_order(cashier_1, stall_1, "steak", 15) # should return " Dont have enough money for that please reload more!"
+    print("CASE 3^\n")
+    # # CASE 4: the customer successfully places an order
+    customer_1.validate_order(cashier_1, stall_1, "grilled cheese", 1) # should return your order has been processed
+    customer_2.validate_order(cashier_2, stall_2, "pizza", 2)   # should return your order has been processed
+    customer_3.validate_order(cashier_1, stall_1, "crab legs", 1)   # should return your order has been processed
+    print("CASE 4 ^\n")
 
- 
-""
+    pass 
+
 if __name__ == "__main__":
 	main()
 	print("\n")
