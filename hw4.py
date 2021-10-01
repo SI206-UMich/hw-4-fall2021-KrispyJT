@@ -81,18 +81,21 @@ class Stall:
         self.earnings = earnings
 
     def has_item(self, name, quantity):
-        if name in self.inventory.keys() and self.inventory[name] >= quantity: #checks if name in the self inventory AND if the key is greater than or equal to the quantity 
-            return True
+        if name in self.inventory.keys():
+            if self.inventory[name] >= quantity: #checks if name in the self inventory AND if the key is greater than or equal to the quantity 
+                return True
+            else:
+                return False
         else:
             return False
     
     def process_order(self, name, quantity):
         if self.has_item(name, quantity):
             self.inventory[name] -= quantity
-            self.earnings += self.cost * quantity
+            self.earnings = self.cost * quantity
             print("Your order has been processed!") #maybe should be return?
         else:
-            pass
+            return "Sorry, we're out"
 
     def stock_up(self, name, quantity):
         if name in self.inventory.keys():
@@ -230,7 +233,7 @@ class TestAllMethods(unittest.TestCase):
     
 ### Write main function
 def main():
-    # Made 2 dictionaties with at least 3 food types and cost per item (INVENTORY)
+    # Made 2 dictionaties with at least 3 food types  (INVENTORY)
     inventory_1 = {"grilled cheese": 5, "soup and salad": 10, "lobster": 15, "nuggets": 4, "steak" : 80, "crab legs" : 45}
     inventory_2 = {"lasagna": 50, "boneless wings": 7, "stirfry": 9, "pizza": 30, "quesadilla" : 25, "brownie" : 8}
 
@@ -269,8 +272,8 @@ def main():
     customer_2.validate_order(cashier_2, stall_2, "pizza", 2)   # should return your order has been processed
     customer_3.validate_order(cashier_1, stall_1, "crab legs", 1)   # should return your order has been processed
     print("CASE 4 ^\n")
- 
 
+    print(Stall.__str__(stall_2))
 if __name__ == "__main__":
 	main()
 	print("\n")
