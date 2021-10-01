@@ -81,7 +81,7 @@ class Stall:
         self.earnings = earnings
 
     def has_item(self, name, quantity):
-        if name in self.inventory and self.inventory[name] >= quantity: #checks if name in the self inventory AND if the key is greater than or equal to the quantity 
+        if name in self.inventory.keys() and self.inventory[name] >= quantity: #checks if name in the self inventory AND if the key is greater than or equal to the quantity 
             return True
         else:
             return False
@@ -89,9 +89,10 @@ class Stall:
     def process_order(self, name, quantity):
         if self.has_item(name, quantity):
             self.inventory[name] -= quantity
+            self.earnings += self.cost * quantity
             print("Your order has been processed!") #maybe should be return?
-
-        self.earnings += self.cost * quantity
+        else:
+            pass
 
     def stock_up(self, name, quantity):
         if name in self.inventory.keys():
@@ -110,13 +111,16 @@ class TestAllMethods(unittest.TestCase):
     
     def setUp(self):
         inventory = {"Burger":40, "Taco":50}
+        inventory5 = {"Krabby patty": 25, "chum bucket": 50}
         self.f1 = Customer("Ted")
         self.f2 = Customer("Morgan", 150)
         self.s1 = Stall("The Grill Queen", inventory, cost = 10)
         self.s2 = Stall("Tamale Train", inventory, cost = 9)
         self.s3 = Stall("The Streatery", inventory, cost= 8)
+        self.s5 = Stall("Noodles", inventory5)
         self.c1 = Cashier("West")
         self.c2 = Cashier("East")
+        self.c3 = Cashier("South")
         #the following codes show that the two cashiers have the same directory
         for c in [self.c1, self.c2]:
             for s in [self.s1,self.s2,self.s3]:
@@ -176,41 +180,53 @@ class TestAllMethods(unittest.TestCase):
     def test_compute_cost(self):
         #what's wrong with the following statements?
         #can you correct them?
+        self.s1.compute_cost(5)
         self.assertEqual(self.s1.compute_cost(5), 50)
+        self.s3.compute_cost(6)
         self.assertEqual(self.s3.compute_cost(6), 48)
 
 	# Check that the stall can properly see when it is empty
     def test_has_item(self):
         # Set up to run test cases
         # Test to see if has_item returns True when a stall has enough items left
-        self.assertTrue(self.s1.has_item("Burger", 5), True)
+        self.s1.has_item("Burger", 5)
+        self.assertEqual(self.s1.has_item("Burger", 5), True)
         # Please follow the instructions below to create three different kinds of test cases 
-        # Test case 1: the stall does not have this food item: 
-        self.assertFalse(self.s1.has_item("Fish", 10), False)
+        # Test case 1: the stall does not have this food item:
+        self.s1.has_item("Fish", 10) 
+        self.assertEqual(self.s1.has_item("Fish", 10), False)
         # Test case 2: the stall does not have enough food item: 
-        self.assertFalse(self.s2.has_item("Taco", 100), False)
+        self.s2.has_item("Taco", 100)
+        self.assertEqual(self.s2.has_item("Taco", 100), False)
         # Test case 3: the stall has the food item of the certain quantity: 
-        self.assertTrue(self.s2.has_item("Taco", 50), True)
+        self.s2.has_item("Taco", 50)
+        self.assertEqual(self.s2.has_item("Taco", 50), True)
 
 	# Test validate order
     def test_validate_order(self):
-        inventory = {"Burger" : 15}
-        s5 = Stall("Another Stall", inventory)
+        # inventory = {"Burger" : 15}
+        # s5 = Stall("Another Stall", inventory)
 		# case 1: test if a customer doesn't have enough money in their wallet to order
-        self.assertFalse(self.f1.validate_order(self.c1, self.s1, "Burger", 20)) 
+        jacks_wallet = self.f1.wallet
+
+        self.f1.validate_order(self.c1, self.s1, "Burger", 30)
+        self.assertEqual(jacks_wallet, self.f1.wallet)
         # should return "Dont have enough money for that :( please reload the money"
 		# case 2: test if the stall doesn't have enough food left in stock
-        self.assertFalse(self.f2.validate_order(self.c2, self.s2, "Burger", 45))
+        self.f1.validate_order(self.c1, self.s1, "Burger", 3000)
+        self.assertEqual(jacks_wallet, self.f1.wallet)
         # should return "Our stall has run out of that ___ please try a different stall" 
 		# case 3: check if the cashier can order item from that stall
-        self.assertFalse(self.f1.validate_order(self.c1, s5, "Burger", 15))
+        self.f1.validate_order(self.c3, self.s1, "Burger", 2)
+        self.assertEqual(jacks_wallet, self.f1.wallet)
         # should return "sorry we dont have that vendor stall, please try a different one"
     # Test if a customer can add money to their wallet
     def test_reload_money(self):
+        jacks_wallet = self.f1.wallet
         self.f1.reload_money(50) #f1 starts out with 100, after reload_money its now 150
-        self.assertEqual(self.f1.wallet, 150) #checking wallet to equal 150
-        self.f2.reload_money(25) #f2 starts out with 150, after reload_money its now 175
-        self.assertEqual(self.f2.wallet, 175) #checking wallet to see if it equals 175
+        new_amount = 50 + jacks_wallet
+        self.assertEqual(new_amount, self.f1.wallet)
+      
     
 ### Write main function
 def main():
@@ -238,7 +254,7 @@ def main():
     customer_2.validate_order(cashier_1, stall_2, "stirfry", 1) # will return "sorry we dont have that vendor stall"
     customer_3.validate_order(cashier_1, stall_2, "grilled cheese", 1) # will return "sorry we dont have that vendor stall"
     print('CASE 1 ^ \n')
-    # CASE 2: the casher has the stall, but not enough ordered food or the ordered food item
+    # CASE 2: the casher has the stall, but not enough ordered food or the ordered food 
     customer_1.validate_order(cashier_1, stall_1, "grilled cheese", 11) # will return "our stall has run out __ please try a different stall"
     customer_2.validate_order(cashier_1, stall_1, "nuggets", 13) # will return "our stall has run out __ please try a different stall"
     customer_3.validate_order(cashier_2, stall_2, "stirfry", 20) # will return "our stall has run out __ please try a different stall"
@@ -253,8 +269,7 @@ def main():
     customer_2.validate_order(cashier_2, stall_2, "pizza", 2)   # should return your order has been processed
     customer_3.validate_order(cashier_1, stall_1, "crab legs", 1)   # should return your order has been processed
     print("CASE 4 ^\n")
-
-    pass 
+ 
 
 if __name__ == "__main__":
 	main()
